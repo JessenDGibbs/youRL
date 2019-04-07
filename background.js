@@ -9,48 +9,54 @@ var web_data = [];
 var web_name = [];
 var list_color = [];
 
+var ctx;
+
 document.addEventListener('DOMContentLoaded', function () {
     buildTypedUrlList("typedUrl_div");
+    ctx = document.getElementById('canvas').getContext('2d');
   });
-  
-  var randomScalingFactor = function() {
-      return Math.round(Math.random() * 100);
-  };
-  
+
   console.log(web_data);
   console.log(web_name);
   console.log(list_color);
   
+  function createChart() {
+    var config = {
+        type: 'pie',
+        data: {
+            labels: web_name,
+            datasets: [{
+                data: web_data,
+                backgroundColor: list_color
+            }],
+        },
+        options: {
+            responsive: true,
+            events: ['click']
+        }
+    };
+    window.myPie = new Chart(ctx, config);
+    var canvas = document.getElementById("canvas");
+    canvas.addEventListener(
+        'mousedown',
+        function(evt){
+            var activePoint = window.myPie.getElementAtEvent(evt)[0];
+            if (activePoint && activePoint._model) {
+                var url = activePoint._model.label;
+                onAnchorClick(url);
+            }
+        },
+        false
+    );
+
+  }
+
   
-  var config = {
-      type: 'pie',
-      data: {
-          labels: [web_name[0],web_name[1],web_name[2],web_name[3],web_name[4],web_name[5],web_name[6],web_name[7],web_name[8],web_name[9]],
-          datasets: [{
-              data: web_data,
-              backgroundColor: list_color
-          }],
-      },
-      options: {
-          responsive: true
-      }
-  };
-  console.log(typeof web_name[1]);
-  
-  
-  window.onload = function() {
-          var ctx = document.getElementById('canvas').getContext('2d');
-          console.log(ctx);
-          window.myPie = new Chart(ctx, config);
-      };
-  
-function onAnchorClick(event) {
+function onAnchorClick(url) {
   chrome.tabs.create({
     selected: true,
-    url: event.srcElement.href
+    url: `https://${url}`
   });
-  var prev = [];
-  return false;
 }
 // Search history to find up to ten links that a user has typed in,
 // and show those links in a popup.
@@ -152,6 +158,6 @@ function buildTypedUrlList(divName) {
         list_color.push('rgba(' + rgba.toString() + ')')
     }
     // compare old to new list
-
+    createChart();
   };
 }
