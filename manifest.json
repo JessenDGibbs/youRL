@@ -1,0 +1,21 @@
+{
+ "manifest_version": 2,
+ "name": "yourRls",
+ "description": "The best extension ever.",
+ "version": "1",
+ "author": "HackDartmouth",
+  "permissions": [
+    "tabs",
+    "history"
+  ],
+  "background": {
+    "scripts": [ "background.js", "utils.js"],
+    "persistent": false
+  },
+  "icons": { "16": "logo.png"},
+  "browser_action": {
+    "default_icon": "logo.png",
+    "default_popup": "index.html",
+    "default_title": "Lookup legislation!"
+  }
+}
